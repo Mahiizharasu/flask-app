@@ -1,0 +1,39 @@
+replicaCount: 2
+
+image:
+  repository: mahiizh/flask  # Replace with your Docker Hub or ECR repo
+replicaCount: 2
+
+image:
+  repository: mahiizh/flask
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 5000
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+  rules:
+    - host: flask-app.example.com  # Replace with your actual domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: flask-app
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - flask-app.example.com  # Replace with your domain
+      secretName: flask-tls
+
+
+

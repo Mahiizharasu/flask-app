@@ -1,0 +1,48 @@
+controller:
+  admissionWebhooks:
+    enabled: false  # Set this to true if you want to enable admission webhooks.
+
+defaultBackend:
+  enabled: true  # Set this to false if you do not need the default backen
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+clusterRole:
+  name: nginx-ingress   # Specify the name for ClusterRole
+
+serviceAccount:
+  create: true
+  name: "nginx-ingress-service-account"  # Ensure this matches the service account defined in RBAC
+  
+namespace: mahi-namespace
+
+service:
+  type: LoadBalancer
+  port: 80
+
+ingress:
+  enabled: true
+  annotations: 
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: nginx.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: nginx-example-com-tls
+      hosts:
+        - nginx.example.com
+autoscaling:
+  enabled: false   # Set to 'true' if you want to enable autoscaling
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+
+
+
